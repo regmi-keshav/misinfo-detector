@@ -1,4 +1,4 @@
-#  Misinformation Detector: Exploratory Data Analysis (EDA) Story
+#  Misinformation Detector: EDA REPORT
 
 This EDA explores the linguistic, structural, and temporal patterns that distinguish real from fake news in our dataset. Each section is driven by a guiding question, followed by visual analysis and key insights.
 
@@ -8,6 +8,8 @@ This project uses two primary datasets:
 
 - **True.csv**: Contains news articles labeled as real.
 - **Fake.csv**: Contains news articles labeled as fake.
+
+The combined dataset covers articles published between **March 31, 2015** and **February 19, 2018**.
 
 Each dataset includes the following columns:
 - **title**: The headline of the news article.
@@ -22,13 +24,20 @@ The goal is to analyze and compare the linguistic and structural characteristics
 
 ## 1. Data Cleaning & Preparation
 
-**Before analysis, we ensured data quality by:**
-- Removing noisy/incomplete records (e.g., missing or malformed dates).
-- Dropping fully duplicated rows and resolving label conflicts for the same text.
-- Standardizing date formats and merging real and fake news datasets.
+**Steps taken to ensure data quality:**
+- Removed records with missing or invalid dates.
+- Dropped exact duplicates and resolved any label inconsistencies for identical articles.
+- Standardized date formats and combined the real and fake news datasets into a single dataframe.
+- Engineered additional metadata features:
+  - `text_length`: Number of characters in the article body.
+  - `title_length`: Number of characters in the headline.
+  - `num_exclamations`: Count of exclamation marks in the article.
+  - `num_questions`: Count of question marks in the article.
+  - `num_uppercase_words`: Number of fully uppercase words in the article.
+  - `day_of_week`: Day of the week derived from the publication date.
 
-*Outcome:*  
-A clean, deduplicated dataset ready for robust analysis and modeling.
+**Result:**  
+A clean, unified, and feature-rich dataset prepared for comprehensive exploratory analysis and modeling.
 
 ---
 
@@ -203,7 +212,27 @@ Fake news articles contain **more uppercase words** (mean: 8.4 vs. 6.7; max: 309
 
 ---
 
-## 12. Feature Selection for Modeling
+## 12. Most Frequent Words 
+
+**Question:**  
+*What are the top 10 most frequent words in both fake and real news articles, and how do they impact modeling?*
+
+**Plot:**  
+![Top 10 Most Frequent Words](../reports/figures/top_10_words.png)  
+
+**Insight:**  
+The top 10 words are mainly political terms "trump" (100K+), "president", "reuters", "donald", "states", "government", "house", "republican", and "united" reflecting the dataset's political focus rather than true linguistic differences between real and fake news.
+
+**Key Concerns:**
+- **Temporal bias:** These terms are tied to the 2016–2017 political period, which may limit model generalizability to other contexts.
+- **Domain vocabulary:** Frequent mentions of news agencies and institutions (e.g., "Reuters", "White House", "United States", "government") risk overfitting to specific sources instead of capturing universal misinformation patterns.
+
+**Summary:**  
+> *These frequent words will be removed during preprocessing to prevent bias and ensure the model learns generalizable patterns rather than dataset-specific artifacts.*
+
+---
+
+## 13. Feature Selection for Modeling
 
 - **Dropped Columns:**  
   `subject`, `date`, and `day_of_week` were removed before modeling to prevent data leakage and overfitting to temporal trends.
@@ -229,5 +258,4 @@ This EDA reveals a **clear linguistic and structural divide** between real and f
 
 ---
 
-**The final cleaned dataset is available at:**  
-[cleaned_news.csv](/data/processed/cleaned_news.csv)
+**The final cleaned dataset is available at:**  [cleaned_news.csv](/data/processed/cleaned_news.csv)
