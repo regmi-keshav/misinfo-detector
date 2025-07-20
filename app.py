@@ -8,14 +8,19 @@ from datetime import datetime
 from typing import Dict, List, Optional
 import plotly.express as px
 import plotly.graph_objects as go
+from dotenv import load_dotenv
+import os
 
+
+
+load_dotenv()
 # Configuration
-API_URL = "https://veritas-news-credibility-analyzer.onrender.com/predict"
-MAX_TEXT_LENGTH = 10000
+API_URL = os.getenv('API_URL', "http://127.0.0.1:8000/predict")
+MAX_TEXT_LENGTH = 20000
 MIN_TEXT_LENGTH = 50
 
 st.set_page_config(
-    page_title="Veritas: News Credibility Analyzer",
+    page_title="Misinfo Detector",
     page_icon="📰",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -537,7 +542,7 @@ def display_enhanced_sidebar():
                 st.download_button(
                     label="Download JSON",
                     data=export_data,
-                    file_name=f"veritas_analysis_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
+                    file_name=f"misinfo_analysis_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
                     mime="application/json"
                 )
                 
@@ -672,7 +677,7 @@ def display_shap_explanation(explanation: Dict):
             st.info("**Model Reasoning:** The negative features (supporting real news classification) outweigh the positive features in this analysis.")
 
 
-def render_risk_meter(fake_conf: float, threshold: float = 45.0):
+def render_risk_meter(fake_conf: float, text_description: str | None, threshold: float = 45.0):
     """
     Render a compact, professional Risk Meter showing fake news probability.
 
@@ -695,17 +700,17 @@ def render_risk_meter(fake_conf: float, threshold: float = 45.0):
         description, color = get_confidence_level(fake_conf)
         if color == "error":
             st.markdown(
-            f"<span style='color:crimson; font-weight:600'>{description}.</span>", 
+            f"<span style='color:crimson; font-weight:600'>{text_description}.</span>", 
             unsafe_allow_html=True
             )
         elif color == "warning":
             st.markdown(
-            f"<span style='color:orange; font-weight:600'>{description}. </span>", 
+            f"<span style='color:orange; font-weight:600'>{text_description}. </span>", 
             unsafe_allow_html=True
             )
         else:
             st.markdown(
-            f"<span style='color:seagreen; font-weight:600'>{description}.</span>", 
+            f"<span style='color:seagreen; font-weight:600'>{text_description}.</span>", 
             unsafe_allow_html=True
             )
 
@@ -825,8 +830,8 @@ def display_enhanced_results(data: Dict, metrics: Dict, risk_indicators: List[Di
             st.error(f"**{risk_level}** - Misinformation probability: {fake_prob:.1%}")
         
         # risk meter
-        render_risk_meter(fake_prob)
-        st.info(risk_description)
+        render_risk_meter(fake_prob, risk_description)
+        # st.info(risk_description)
     
     st.markdown('---')
     # Classification methodology
@@ -926,7 +931,7 @@ def display_enhanced_results(data: Dict, metrics: Dict, risk_indicators: List[Di
 # Main Application
 def main():
     display_enhanced_sidebar()
-    st.title("Veritas: News Credibility Analyzer")
+    st.title("Misinfo Detector - News Analysis Tool")
     # st.markdown("""
     # *Advanced ML system that predicts whether news articles are fake or real with explainable AI insights*
     # """)
@@ -1009,7 +1014,7 @@ def main():
                 # Make API request
                 payload = {"text": text_input}
                 
-                with st.spinner("Analyzing content patterns..."):
+                with st.spinner("Analyzing content patterns. Hold tight, this may take 1-2 minutes (go grab a coffee ☕)!"):
                     response_data = make_api_request(payload)
                 
                 if response_data:
@@ -1061,7 +1066,7 @@ def main():
     <div style='text-align: center; color: #666; font-size: 0.8em;'>
         <p>This tool is designed to promote media literacy and critical thinking.<br>
         Always verify important information through multiple reliable sources.</p>
-        <p>Questions or feedback? Contact: <a href="https://github.com/kushalregmi61">Kushal Regmi</a></p>
+        <p>Questions or feedback? Contact: <a href="https://github.com/regmi-keshav">Keshav Regmi</a></p>
     </div>
     """, unsafe_allow_html=True)
 
