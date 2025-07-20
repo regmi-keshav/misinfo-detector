@@ -1,0 +1,8 @@
+services:
+  misinfo-detector:
+    build: .
+    image: keshavregmi/misinfo-detector:amd64
+    ports:
+      - "8000:8000"
+    container_name: misinfo-detector
+    restart: unless-stopped

@@ -1,4 +1,3 @@
-# Utility functions for model handling
 import joblib
 from utils.preprocessing import TextPreprocessor
 

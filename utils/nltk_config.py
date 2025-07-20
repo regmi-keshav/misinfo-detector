@@ -1,4 +1,3 @@
-# utils/nltk_config.py
 import os
 import nltk
 from dotenv import load_dotenv
